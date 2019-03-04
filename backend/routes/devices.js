@@ -22,7 +22,8 @@ function deviceAdapter(device) {
         name: device.name,
         address: device.address,
         port: device.port,
-        state: device.state ? 'on' : 'off'
+        state: device.state ? 'on' : 'off',
+        log: device.log
     };
 };
 
@@ -40,6 +41,18 @@ router.get('/:id', async(req, res) => {
     } else {
         res.sendStatus(404);
     };
+});
+
+router.get('/log/:id', async(req, res) => {
+    const deviceId = req.params.id;
+    const device = await Device.findById(deviceId, 'log').exec();
+
+    if (device) {
+        res.json(device.log);
+    } else {
+        res.sendStatus(404);
+    };
+
 });
 
 router.post('/', async(req, res) => {
@@ -70,18 +83,10 @@ router.put('/:id', async(req, res) => {
 
         await device.update({
             ...deviceData,
-            state: deviceData.state === 'on' ? true : false
-        })
+            state: device.state,
+            log: device.log
+        });
 
-        // await Device.findByIdAndUpdate(deviceId, {
-        //     ...deviceData,
-        //     state: deviceData.state === 'on' ? true : false
-        // });  
-
-        const url = `http://${device.address}:${device.port}`;
-        const command = device.state ? 'Power off' : 'Power On';
-
-        await sendRequest(`${url}/cm?cmnd=${command}`)
         res.sendStatus(200);
   
     } catch(e) {
@@ -93,6 +98,30 @@ router.put('/:id', async(req, res) => {
     // } else {
     //     res.sendStatus(404);
     // }
+});
+
+
+router.put('/log/:id', async(req, res) => {
+    const deviceId = req.params.id;
+    const deviceData = req.body;
+
+    try {
+        const device = await Device.findById(deviceId).exec();
+
+        await device.update({
+            state: deviceData.state === 'on' ? true : false,
+            $push: { "log": { "_id": deviceData.state.id, "date": new Date(), "action": deviceData.state }}
+        });
+
+        const url = `http://${device.address}:${device.port}`;
+        const command = device.state ? 'Power off' : 'Power On';
+
+        await sendRequest(`${url}/cm?cmnd=${command}`)
+        res.sendStatus(200);
+  
+    } catch(e) {
+        res.sendStatus(404);
+    };
 });
 
 module.exports = router;

@@ -9,7 +9,7 @@ export default class DeviceLog extends PureComponent {
 
     componentDidMount = async () => {
         const { id } = this.props.match.params;
-
+        
         this.setState({
             device: await getDeviceById(id, 10),
             log: await getDeviceLog(id)
