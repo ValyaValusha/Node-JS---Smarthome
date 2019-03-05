@@ -1,6 +1,6 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import DeviceItem from '../components/DeviceItem';
-import {getDevices} from '../api';
+import { getDevices } from '../api';
 
 export default class Devices extends PureComponent {
     constructor(props) {

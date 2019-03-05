@@ -1,23 +1,6 @@
 import axios from 'axios';
 
 const serverUrl = 'http://localhost:3010';
-let index = 3;
-let devices = {
-    device1: {
-        id: 'device1',
-        name: 'Device #1',
-        address: '192.168.1.50',
-        port: 90,
-        state: 'on'
-    },
-    device2: {
-        id: 'device2',
-        name: 'Device #2',
-        address: '192.168.1.60',
-        port: 80,
-        state: 'off'
-    }
-};
 
 export async function getDevices() {
     const response = await axios.get(`${serverUrl}/devices`);
@@ -59,5 +42,56 @@ export async function switchOff(deviceId) {
 
 export async function getDeviceLog(deviceId) {
     const response = await axios.get(`${serverUrl}/devices/log/${deviceId}`);
+    return response.data;
+}
+
+export async function getGroups() {
+    const response = await axios.get(`${serverUrl}/groups`);
+    return response.data;
+}
+
+export async function getGroupById(groupId) {
+    const response = await axios.get(`${serverUrl}/groups/${groupId}`);
+    return response.data;
+}
+
+export async function postGroup(data) {
+    return axios.post(`${serverUrl}/groups`, data);
+}
+
+export async function removeGroup(groupId) {
+    return axios.delete(`${serverUrl}/groups/${groupId}`);
+}
+
+export async function updateGroup(groupId, data) {
+    return axios.put(`${serverUrl}/groups/${groupId}`, data);
+}
+
+export async function addDeviceToGroup(groupId, data) {
+    return axios.put(`${serverUrl}/groups/addDevice/${groupId}`, data);
+}
+
+export async function removeDeviceFromGroup(groupId, data) {
+    return axios.put(`${serverUrl}/groups/deleteDevice/${groupId}`, data);
+}
+
+export async function switchOnGroup(groupId) {
+    await updateGroupState(groupId, {
+        state: 'on'
+    });
+}
+
+export async function switchOffGroup(groupId) {
+    await updateGroupState(groupId, {
+        state: 'off'
+    });
+}
+
+export async function updateGroupState(groupId, data) {
+    return axios.put(`${serverUrl}/groups/log/${groupId}`, data);
+}
+
+export async function getGroupLog(groupId) {
+    const response = await axios.get(`${serverUrl}/groups/log/${groupId}`);
     return response.data;
 }

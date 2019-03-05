@@ -110,7 +110,7 @@ router.put('/log/:id', async(req, res) => {
 
         await device.update({
             state: deviceData.state === 'on' ? true : false,
-            $push: { "log": { "_id": deviceData.state.id, "date": new Date(), "action": deviceData.state }}
+            $push: { "log": { "date": new Date(), "action": deviceData.state }}
         });
 
         const url = `http://${device.address}:${device.port}`;

@@ -9,7 +9,6 @@ export default class DeviceEdit extends PureComponent {
 
     componentDidMount = async () => {
         const { id } = this.props.match.params;
-
         this.setState({
             device: await getDeviceById(id)
         });
